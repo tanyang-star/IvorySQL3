@@ -569,6 +569,10 @@ sub init
 	}
 
 	print $conf "port = $port\n";
+
+	my $ora_port = get_free_port();
+	print $conf "ivorysql.port = $ora_port\n";
+
 	if ($use_tcp)
 	{
 		print $conf "unix_socket_directories = ''\n";
@@ -792,10 +796,12 @@ sub init_from_backup
 	chmod(0700, $data_path);
 
 	# Base configuration for this node
+	my $ora_port = get_free_port();
 	$self->append_conf(
 		'postgresql.conf',
 		qq(
 port = $port
+ivorysql.port = $ora_port
 ));
 	if ($use_tcp)
 	{
