@@ -112,6 +112,9 @@
 /* TVORYSQL:END - SQL PARSER */
 
 extern uint32 bootstrap_data_checksum_version;
+/* BEGIN - SQL oracle_mode */
+extern int       bootstrap_database_mode;
+/* END - SQL oracle_mode */
 
 /* timeline ID to be used when bootstrapping */
 #define BootstrapTimeLineID		1
@@ -4167,8 +4170,8 @@ ReadControlFile(void)
 
 	/* BEGIN - SQL PARSER */
 	/* set guc parameters' value about database compatible mode  */
-//	SetConfigOption("database_mode", ControlFile->dbmode == DB_PG ? "pg" : "oracle",
-//					PGC_INTERNAL, PGC_S_OVERRIDE);
+	SetConfigOption("database_mode", ControlFile->dbmode == DB_PG ? "pg" : "oracle",
+					PGC_INTERNAL, PGC_S_OVERRIDE);
 	SetConfigOption("compatible_mode", ControlFile->dbmode == DB_PG ? "pg" : "oracle",
 					PGC_USERSET, PGC_S_OVERRIDE);
 	/* END - SQL PARSER */
@@ -4799,6 +4802,11 @@ BootStrapXLOG(void)
 	ControlFile->time = checkPoint.time;
 	ControlFile->checkPoint = checkPoint.redo;
 	ControlFile->checkPointCopy = checkPoint;
+
+	/* BEGIN - SQL oracle_mode */
+	/* save database compatible level value */
+	ControlFile->dbmode = bootstrap_database_mode;
+	/* END - SQL oracle_mode */
 
 	/* some additional ControlFile fields are set in WriteControlFile() */
 	WriteControlFile();

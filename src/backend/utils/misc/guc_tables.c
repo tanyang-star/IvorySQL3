@@ -474,19 +474,20 @@ static const struct config_enum_entry wal_compression_options[] = {
 	{NULL, 0, false}
 };
 
-/* IVORYSQL:BEGIN - SQL PARSER */
+/* IvorySQL:BEGIN - SQL oracle_mode */
 /* The comments shown as blow define the
  * value range of guc parameters "database_mode"
  * and "compatible_db".
  */
-//static const struct config_enum_entry db_mode_options[] = {
-//     {"pg", DB_PG, false},
-//     {"oracle", DB_ORACLE, false},
-//     {"0", DB_PG, false},
-//     {"1", DB_ORACLE, false},
-//     {NULL, 0, false}
-//};
-
+static const struct config_enum_entry db_mode_options[] = {
+	{"pg", DB_PG, false},
+	{"oracle", DB_ORACLE, false},
+	{"0", DB_PG, false},
+	{"1", DB_ORACLE, false},
+	{NULL, 0, false}
+};
+/* IvorySQL:END - SQL oracle_mode */
+/* IvorySQL:BEGIN - SQL PARSER */
 static const struct config_enum_entry db_parser_options[] = {
 	{"pg", PG_PARSER, false},
 	{"oracle", ORA_PARSER, false},
@@ -632,10 +633,13 @@ static char *recovery_target_lsn_string;
 /* should be static, but commands/variable.c needs to get at this */
 char	   *role_string;
 
-/* IVORYSQL:BEGIN - SQL PARSER */
-//int  database_mode = DB_PG;
+/* BEGIN - SQL oracle_mode */
+int    database_mode = DB_PG;
+/* END - SQL oracle_mode */
+
+/* BEGIN - SQL PARSER */
 int    compatible_db = PG_PARSER;
-/* IVORYSQL:END - SQL PARSER */
+/* END - SQL PARSER */
 
 /* should be static, but guc.c needs to get at this */
 bool		in_hot_standby_guc;
@@ -5059,18 +5063,19 @@ struct config_enum ConfigureNamesEnum[] =
 		NULL, NULL, NULL
 	},
 
-	/* IVORYSQL:BEGIN - SQL PARSER */
-// 						{
-// 						{"database_mode", PGC_INTERNAL, PRESET_OPTIONS,
-// 										gettext_noop("Set database mode"),
-// 										NULL,
-// 										GUC_NOT_IN_SAMPLE | GUC_DISALLOW_IN_FILE
-// 						},
-// 						&database_mode,
-// 						DB_PG, db_mode_options,
-// 						NULL, NULL, NULL
-// 		},
-
+	/* BEGIN - SQL oracle_mode */
+	{
+		{"database_mode", PGC_INTERNAL, PRESET_OPTIONS,
+							gettext_noop("Set database mode"),
+								NULL,
+								GUC_NOT_IN_SAMPLE | GUC_DISALLOW_IN_FILE
+		},
+		&database_mode,
+		DB_PG, db_mode_options,
+		NULL, NULL, NULL
+	},
+	/* END - SQL oracle_mode */
+	/* BEGIN - SQL PARSER */
 	{
 		{"compatible_mode", PGC_USERSET, CLIENT_CONN_STATEMENT,
 						gettext_noop("Set default sql parser compatibility mode"),

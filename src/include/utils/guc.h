@@ -286,10 +286,14 @@ extern PGDLLIMPORT int tcp_user_timeout;
 extern PGDLLIMPORT bool trace_sort;
 #endif
 
+/* BEGIN - SQL oracle_mode */
+extern int	database_mode;
+/* END - SQL oracle_mode */
+
 /* BEGIN - SQL PARSER */
-//extern int	database_mode;
 extern PGDLLIMPORT int	compatible_db;
 /* END - SQL PARSER */
+
 
 /*
  * Functions exported by guc.c

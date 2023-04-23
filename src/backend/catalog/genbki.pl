@@ -28,8 +28,19 @@ my $include_path;
 
 my $num_errors = 0;
 
+#BEGIN - SQL oracle_mode
+my $compatible_type = '';
+my $bkifile = '';
+my $schemafile = '';
+my $fk_info_file = '';
+my $constraints_file = '';
+#END - SQL oracle_mode
+
 GetOptions(
 	'output:s'       => \$output_path,
+#BEGIN - SQL oracle_mode
+	'M:s'			 => \$compatible_type,
+#END - SQL oracle_mode
 	'set-version:s'  => \$major_version,
 	'include-path:s' => \$include_path) || usage();
 
@@ -91,7 +102,9 @@ foreach my $header (@ARGV)
 	# Not all catalogs have a data file.
 	if (-e $datfile)
 	{
-		my $data = Catalog::ParseData($datfile, $schema, 0);
+		#BEGIN - SQL oracle_mode
+		my $data = Catalog::ParseData($datfile, $schema, 0, $compatible_type);
+		#END - SQL oracle_mode
 		$catalog_data{$catname} = $data;
 
 		foreach my $row (@$data)
@@ -408,16 +421,36 @@ my %lookup_kind = (
 
 # Open temp files
 my $tmpext  = ".tmp$$";
-my $bkifile = $output_path . 'postgres.bki';
+#BEGIN - SQL oracle_mode
+if ($compatible_type eq 'pg')
+{
+	$bkifile = $output_path . 'postgres.bki';
+	$fk_info_file = $output_path . 'system_fk_info.h';
+	$constraints_file = $output_path . 'system_constraints.sql';
+	$schemafile = $output_path . 'schemapg.h';
+}
+elsif ($compatible_type eq 'oracle')
+{
+	$bkifile = $output_path . 'postgres_oracle.bki';
+	$fk_info_file = $output_path . 'system_fk_info.h';
+	$constraints_file = $output_path . 'system_constraints.sql';
+	$schemafile = $output_path . 'schemapg.h';
+}
+else
+{
+	die "should use -M arg.\n"
+}
+#END - SQL oracle_mode
+
 open my $bki, '>', $bkifile . $tmpext
   or die "can't open $bkifile$tmpext: $!";
-my $schemafile = $output_path . 'schemapg.h';
+#my $schemafile = $output_path . 'schemapg.h';
 open my $schemapg, '>', $schemafile . $tmpext
   or die "can't open $schemafile$tmpext: $!";
-my $fk_info_file = $output_path . 'system_fk_info.h';
+#my $fk_info_file = $output_path . 'system_fk_info.h';
 open my $fk_info, '>', $fk_info_file . $tmpext
   or die "can't open $fk_info_file$tmpext: $!";
-my $constraints_file = $output_path . 'system_constraints.sql';
+#my $constraints_file = $output_path . 'system_constraints.sql';
 open my $constraints, '>', $constraints_file . $tmpext
   or die "can't open $constraints_file$tmpext: $!";
 
@@ -1131,6 +1164,9 @@ Options:
     --output         Output directory (default '.')
     --set-version    PostgreSQL version number for initdb cross-check
     --include-path   Include path in source tree
+    #BEGIN - SQL oracle_mode
+    -M				 compatible_level(pg or oracle)
+    #END - SQL oracle_mode
 
 genbki.pl generates postgres.bki and symbol definition
 headers from specially formatted header files and .dat
