@@ -83,6 +83,9 @@
 #include "utils/ps_status.h"
 #include "utils/inval.h"
 #include "utils/xml.h"
+/* IVORYSQL:BEGIN - SQL PARSER */
+#include "utils/ora_compatible.h"
+/* IVORYSQL:END - SQL PARSER */
 
 /* This value is normally passed in from the Makefile */
 #ifndef PG_KRB_SRVTAB
@@ -471,6 +474,26 @@ static const struct config_enum_entry wal_compression_options[] = {
 	{NULL, 0, false}
 };
 
+/* IVORYSQL:BEGIN - SQL PARSER */
+/* The comments shown as blow define the
+ * value range of guc parameters "database_mode"
+ * and "compatible_db".
+ */
+//static const struct config_enum_entry db_mode_options[] = {
+//     {"pg", DB_PG, false},
+//     {"oracle", DB_ORACLE, false},
+//     {"0", DB_PG, false},
+//     {"1", DB_ORACLE, false},
+//     {NULL, 0, false}
+//};
+
+static const struct config_enum_entry db_parser_options[] = {
+	{"pg", PG_PARSER, false},
+	{"oracle", ORA_PARSER, false},
+	{NULL, 0, false}
+};
+/* IVORYSQL:END - SQL PARSER */
+
 /*
  * Options for enum values stored in other modules
  */
@@ -608,6 +631,11 @@ static char *recovery_target_lsn_string;
 
 /* should be static, but commands/variable.c needs to get at this */
 char	   *role_string;
+
+/* IVORYSQL:BEGIN - SQL PARSER */
+//int  database_mode = DB_PG;
+int    compatible_db = PG_PARSER;
+/* IVORYSQL:END - SQL PARSER */
 
 /* should be static, but guc.c needs to get at this */
 bool		in_hot_standby_guc;
@@ -5030,6 +5058,30 @@ struct config_enum ConfigureNamesEnum[] =
 		LOGICAL_REP_MODE_BUFFERED, logical_replication_mode_options,
 		NULL, NULL, NULL
 	},
+
+	/* IVORYSQL:BEGIN - SQL PARSER */
+// 						{
+// 						{"database_mode", PGC_INTERNAL, PRESET_OPTIONS,
+// 										gettext_noop("Set database mode"),
+// 										NULL,
+// 										GUC_NOT_IN_SAMPLE | GUC_DISALLOW_IN_FILE
+// 						},
+// 						&database_mode,
+// 						DB_PG, db_mode_options,
+// 						NULL, NULL, NULL
+// 		},
+
+	{
+		{"compatible_mode", PGC_USERSET, CLIENT_CONN_STATEMENT,
+						gettext_noop("Set default sql parser compatibility mode"),
+						NULL,
+						GUC_NOT_IN_SAMPLE | GUC_DISALLOW_IN_FILE
+		},
+		&compatible_db,
+		PG_PARSER, db_parser_options,
+		NULL, NULL, NULL
+	},
+	/* IVORYSQL:END - SQL PARSER */
 
 	/* End-of-list marker */
 	{
