@@ -140,6 +140,12 @@ sub Install
 			'BKI files',
 			[ glob("src\\backend\\catalog\\postgres.*") ],
 			$target . '/share/');
+		#BEGIN - SQL oracle_mode win
+		CopySetOfFiles(
+			'BKI files',
+			[ glob("src\\backend\\catalog\\postgres_oracle.*") ],
+			$target . '/share/');
+		#END - SQL oracle_mode win
 		CopySetOfFiles(
 			'SQL files',
 			[ glob("src\\backend\\catalog\\*.sql") ],
@@ -163,6 +169,9 @@ sub Install
 
 		my $pl_extension_files = [];
 		my @pldirs             = ('src/pl/plpgsql/src');
+		# BEGIN - SQL oracle_mode win
+		push @pldirs, "src/pl/plisql/src";
+		# END - SQL oracle_mode win
 		push @pldirs, "src/pl/plperl"   if $config->{perl};
 		push @pldirs, "src/pl/plpython" if $config->{python};
 		push @pldirs, "src/pl/tcl"      if $config->{tcl};
@@ -629,6 +638,12 @@ sub CopyIncludeFiles
 		'PL/pgSQL header',
 		$target . '/include/server/',
 		'src/pl/plpgsql/src/', 'plpgsql.h');
+	#BEGIN - SQL oracle_mode win
+	CopyFiles(
+		'PL/iSQL header',
+		$target . '/include/server/',
+		'src/pl/plisql/src/', 'plisql.h');
+	#END - SQL oracle_mode win
 
 	# some xcopy progs don't like mixed slash style paths
 	(my $ctarget = $target) =~ s!/!\\!g;

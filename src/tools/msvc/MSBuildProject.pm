@@ -196,6 +196,10 @@ EOF
 			{
 				$outputFile =~
 				  s{^src\\pl\\plpgsql\\src\\gram.c$}{src\\pl\\plpgsql\\src\\pl_gram.c};
+				# BEGIN - SQL oracle_mode win
+				$outputFile =~
+				  s{^src\\pl\\plisql\\src\\gram.c$}{src\\pl\\plisql\\src\\pl_gram.c};
+				# END - SQL oracle_mode win
 				print $f <<EOF;
     <CustomBuild Include="$grammarFile">
       <Message Condition="'\$(Configuration)|\$(Platform)'=='Debug|$self->{platform}'">Running bison on $grammarFile</Message>
@@ -322,7 +326,7 @@ sub WriteItemDefinitionGroup
     <ClCompile>
       <Optimization>$p->{opt}</Optimization>
       <AdditionalIncludeDirectories>$self->{prefixincludes}src/include;src/include/port/win32;src/include/port/win32_msvc;$includes\%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;__WINDOWS__;__WIN32__;WIN32_STACK_RLIMIT=4194304;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE$self->{defines}$p->{defs}\%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>IvorySQL;WIN32;_WINDOWS;__WINDOWS__;__WIN32__;WIN32_STACK_RLIMIT=4194304;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE$self->{defines}$p->{defs}\%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>$p->{strpool}</StringPooling>
       <RuntimeLibrary>$p->{runtime}</RuntimeLibrary>
       <DisableSpecificWarnings>$self->{disablewarnings};\%(DisableSpecificWarnings)</DisableSpecificWarnings>

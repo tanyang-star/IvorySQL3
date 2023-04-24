@@ -32,6 +32,10 @@ my $libpgcommon;
 my $libpgfeutils;
 my $postgres;
 my $libpq;
+# BEGIN - SQL oracle_mode win
+my $liborafeutils;
+# END - SQL oracle_mode win
+
 my @unlink_on_exit;
 
 # Set of variables for modules in contrib/ and src/test/modules/
@@ -78,7 +82,9 @@ my $frontend_extraincludes = {
 	'psql'   => ['src/backend']
 };
 my $frontend_extrasource = {
-	'psql' => ['src/bin/psql/psqlscanslash.l'],
+	# BEGIN - SQL oracle_mode win
+	'psql' => ['src/bin/psql/psqlscanslash.l', 'src/oracle_fe_utils/ora_string_utils.c', 'src/backend/oracle_parser/ora_keywords.c'],
+	# END - SQL oracle_mode win
 	'pgbench' =>
 	  [ 'src/bin/pgbench/exprscan.l', 'src/bin/pgbench/exprparse.y' ]
 };
@@ -169,6 +175,11 @@ sub mkvcbuild
 	  parallel_slot.c print.c psqlscan.l psqlscan.c query_utils.c simple_list.c
 	  string_utils.c recovery_gen.c);
 
+	# BEGIN - SQL oracle_mode win
+	our @orafeutilsfiles = qw(
+	  ora_string_utils.c);
+	# END - SQL oracle_mode win
+
 	$libpgport = $solution->AddProject('libpgport', 'lib', 'misc');
 	$libpgport->AddDefine('FRONTEND');
 	$libpgport->AddFiles('src/port', @pgportfiles);
@@ -182,6 +193,14 @@ sub mkvcbuild
 	$libpgfeutils->AddDefine('FD_SETSIZE=1024');
 	$libpgfeutils->AddIncludeDir('src/interfaces/libpq');
 	$libpgfeutils->AddFiles('src/fe_utils', @pgfeutilsfiles);
+
+	# BEGIN - SQL oracle_mode win
+	$liborafeutils = $solution->AddProject('liborafeutils', 'lib', 'misc');
+	$liborafeutils->AddDefine('FRONTEND');
+	$liborafeutils->AddIncludeDir('src/interfaces/libpq');
+	$liborafeutils->AddFiles('src/oracle_fe_utils', @orafeutilsfiles);
+	$liborafeutils->AddFile('src/backend/oracle_parser/ora_keywords.c');
+	# END - SQL oracle_mode win
 
 	$postgres = $solution->AddProject('postgres', 'exe', '', 'src/backend');
 	$postgres->AddIncludeDir('src/backend');
@@ -293,6 +312,21 @@ sub mkvcbuild
 		'src/backend/replication/libpqwalreceiver');
 	$libpqwalreceiver->AddIncludeDir('src/interfaces/libpq');
 	$libpqwalreceiver->AddReference($postgres, $libpq);
+
+	# BEGIN - SQL oracle_mode win
+	my $libparser_oracle =
+		$solution->AddProject('liboracle_parser', 'dll', '',
+		'src/backend/oracle_parser');
+	$libparser_oracle->AddPrefixInclude('src/include/oracle_parser');
+	$libparser_oracle->AddFiles('src/backend/oracle_parser', 'ora_scan.l', 'ora_gram.y');
+	$libparser_oracle->AddReference($postgres);
+
+	my $plisql =
+		$solution->AddProject('plisql', 'dll', 'PLs', 'src/pl/plisql/src');
+	$plisql->AddPrefixInclude('src/include/oracle_parser');
+	$plisql->AddFiles('src/pl/plisql/src', 'pl_gram.y');
+	$plisql->AddReference($postgres, $libparser_oracle);
+	# END - SQL oracle_mode win
 
 	my $libpq_testclient =
 	  $solution->AddProject('libpq_testclient', 'exe', 'misc',
@@ -839,7 +873,9 @@ sub mkvcbuild
 			}
 		}
 		$proj->AddIncludeDir('src/interfaces/libpq');
-		$proj->AddReference($libpq, $libpgfeutils, $libpgcommon, $libpgport);
+		# BEGIN - SQL oracle_mode win
+		$proj->AddReference($libpq, $libpgfeutils, $liborafeutils, $libpgcommon, $libpgport);
+		# END - SQL oracle_mode win
 		$proj->AddDirResourceFile('src/bin/scripts');
 		$proj->AddLibrary('ws2_32.lib');
 	}
@@ -885,7 +921,9 @@ sub AddSimpleFrontend
 
 	my $p = $solution->AddProject($n, 'exe', 'bin');
 	$p->AddDir('src/bin/' . $n);
-	$p->AddReference($libpgfeutils, $libpgcommon, $libpgport);
+	# BEGIN - SQL oracle_mode
+	$p->AddReference($libpgfeutils, $liborafeutils, $libpgcommon, $libpgport);
+	# END - SQL oracle_mode
 	if ($uselibpq)
 	{
 		$p->AddIncludeDir('src/interfaces/libpq');

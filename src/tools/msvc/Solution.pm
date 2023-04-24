@@ -632,6 +632,17 @@ sub GenerateFiles
 		);
 	}
 
+	# BEGIN - SQL oracle_mode win
+	if (IsNewer(
+			'src/pl/plisql/src/plerrcodes.h', 'src/backend/utils/ora_errcodes.txt'))
+				 {
+			print "Generating PL/SQL's plerrcodes.h...\n";
+			system(
+				'perl src/pl/plisql/src/generate-plerrcodes.pl src/backend/utils/ora_errcodes.txt > src/pl/plisql/src/plerrcodes.h'
+								 );
+				 }
+	# END - SQL oracle_mode win
+
 	if ($self->{options}->{tcl}
 		&& IsNewer(
 			'src/pl/tcl/pltclerrcodes.h', 'src/backend/utils/errcodes.txt'))
@@ -667,6 +678,16 @@ sub GenerateFiles
 		);
 	}
 
+	# BEGIN - SQL oracle_mode win
+	if (IsNewer('src/backend/oracle_parser/ora_kwlist_d.h', 'src/include/oracle_parser/ora_kwlist.h'))
+	{
+		print "Generating Oracle compatibility ora_kwlist_d.h...\n";
+		system(
+			'perl -I src/tools src/tools/ora_gen_keywordlist.pl --extern -o src/backend/oracle_parser src/include/oracle_parser/ora_kwlist.h'
+		);
+	}
+	# END - SQL oracle_mode win
+
 	if (IsNewer(
 			'src/pl/plpgsql/src/pl_reserved_kwlist_d.h',
 			'src/pl/plpgsql/src/pl_reserved_kwlist.h')
@@ -685,6 +706,27 @@ sub GenerateFiles
 		);
 		chdir('../../../..');
 	}
+
+	# BEGIN - SQL oracle_mode
+	if (IsNewer(
+		'src/pl/plisql/src/pl_reserved_kwlist_d.h',
+		'src/pl/plisql/src/pl_reserved_kwlist.h')
+	|| IsNewer(
+		'src/pl/plisql/src/pl_unreserved_kwlist_d.h',
+		'src/pl/plisql/src/pl_unreserved_kwlist.h'))
+	{
+		print
+			"Generating Oracle compatibility pl_reserved_kwlist_d.h and pl_unreserved_kwlist_d.h...\n";
+		chdir('src/pl/plisql/src');
+		system(
+			'perl -I ../../../tools ../../../tools/gen_keywordlist.pl --varname ReservedPLKeywords pl_reserved_kwlist.h'
+		);
+		system(
+			'perl -I ../../../tools ../../../tools/gen_keywordlist.pl --varname UnreservedPLKeywords pl_unreserved_kwlist.h'
+		);
+		chdir('../../../..');
+	}
+	# END - SQL oracle_mode
 
 	if (IsNewer(
 			'src/interfaces/ecpg/preproc/c_kwlist_d.h',
@@ -766,9 +808,14 @@ EOF
 	{
 		chdir('src/backend/catalog');
 		my $bki_srcs = join(' ../../../src/include/catalog/', @bki_srcs);
+		#BEGIN - SQL oracle_mode win
 		system(
-			"perl genbki.pl --include-path ../../../src/include/ --set-version=$majorver $bki_srcs"
+			"perl genbki.pl -M pg --include-path ../../../src/include/ --set-version=$majorver $bki_srcs"
 		);
+		system(
+			"perl genbki.pl -M oracle --include-path ../../../src/include/ --set-version=$majorver $bki_srcs"
+		);
+		#END - SQL oracle_mode win
 		open(my $f, '>', 'bki-stamp')
 		  || confess "Could not touch bki-stamp";
 		close($f);
