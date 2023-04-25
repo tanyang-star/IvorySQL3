@@ -1,8 +1,8 @@
 # -*-perl-*- hey - emacs - this is a perl file
 
-# Copyright (c) 2021-2023, PostgreSQL Global Development Group
+# src/tools/msvc/vcregress_ora_pg.pl
 
-# src/tools/msvc/vcregress.pl
+# add the file for requirement "SQL PARSER"
 
 use strict;
 use warnings;
@@ -160,7 +160,7 @@ sub installcheck_internal
 	$schedule = 'parallel'            if $schedule eq 'serial';
 
 	my @args = (
-		"../../../$Config/pg_regress/pg_regress",
+		"../../../$Config/ora_pg_regress/ora_pg_regress",
 		"--dlpath=.",
 		"--bindir=../../../$Config/psql",
 		"--schedule=${schedule}_schedule",
@@ -193,7 +193,7 @@ sub check
 	InstallTemp();
 	chdir "${topdir}/src/test/regress";
 	my @args = (
-		"../../../$Config/pg_regress/pg_regress",
+		"../../../$Config/ora_pg_regress/ora_pg_regress",
 		"--dlpath=.",
 		"--bindir=",
 		"--schedule=${schedule}_schedule",
@@ -288,7 +288,7 @@ sub tap_check
 	# adjust the environment for just this test
 	local %ENV = %ENV;
 	$ENV{PERL5LIB}      = "$topdir/src/test/perl;$ENV{PERL5LIB}";
-	$ENV{PG_REGRESS}    = "$topdir/$Config/pg_regress/pg_regress";
+	$ENV{PG_REGRESS}    = "$topdir/$Config/ora_pg_regress/ora_pg_regress";
 	$ENV{REGRESS_SHLIB} = "$topdir/src/test/regress/regress.dll";
 
 	$ENV{TESTDATADIR} = "$dir/tmp_check";
@@ -412,7 +412,7 @@ sub plcheck
 		  "============================================================\n";
 		print "Checking $lang\n";
 		my @args = (
-			"$topdir/$Config/pg_regress/pg_regress",
+			"$topdir/$Config/ora_pg_regress/ora_pg_regress",
 			"--bindir=$topdir/$Config/psql",
 			"--dbname=pl_regression", @lang_args, @tests);
 		system(@args);
@@ -451,7 +451,7 @@ sub subdircheck
 	print "============================================================\n";
 	print "Checking $module\n";
 	my @args = (
-		"$topdir/$Config/pg_regress/pg_regress",
+		"$topdir/$Config/ora_pg_regress/ora_pg_regress",
 		"--bindir=${topdir}/${Config}/psql",
 		"--dbname=contrib_regression", @opts, @tests);
 	print join(' ', @args), "\n";
@@ -512,9 +512,9 @@ sub standard_initdb
 {
 	return (
 		#IvorySQL:BEGIN - SQL initdb
-		system('initdb', '-N', '-m', 'pg') == 0 and system(
+		system('initdb', '-N', '-m', 'oracle') == 0 and system(
 		#IvorySQL:END - SQL initdb
-			"$topdir/$Config/pg_regress/pg_regress", '--config-auth',
+			"$topdir/$Config/ora_pg_regress/ora_pg_regress", '--config-auth',
 			$ENV{PGDATA}) == 0);
 }
 
@@ -644,7 +644,7 @@ sub InstallTemp
 sub usage
 {
 	print STDERR
-	  "Usage: vcregress.pl <mode> [<arg>]\n\n",
+	  "Usage: vcregress_ora_pg.pl <mode> [<arg>]\n\n",
 	  "Options for <mode>:\n",
 	  "  bincheck       run tests of utilities in src/bin/\n",
 	  "  check          deploy instance and run regression tests on it\n",

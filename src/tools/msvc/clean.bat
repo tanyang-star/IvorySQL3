@@ -29,6 +29,11 @@ if exist src\backend\oracle_parser\win32ver.rc del /q src\backend\oracle_parser\
 REM END - SQL oracle_mode win
 REM #endif
 if exist src\interfaces\ecpg\test\win32ver.rc del /q src\interfaces\ecpg\test\win32ver.rc
+REM #ifdef IvorySQL
+REM IvorySQL:BEGIN - SQL oracle_test
+if exist src\interfaces\ecpg\oracle_test\win32ver.rc del /q src\interfaces\ecpg\oracle_test\win32ver.rc
+REM IvorySQL:END - SQL oracle_test
+REM #endif
 if exist src\pl\plperl\win32ver.rc del /q src\pl\plperl\win32ver.rc
 if exist src\pl\plpgsql\src\win32ver.rc del /q src\pl\plpgsql\src\win32ver.rc
 REM #ifdef IvorySQL
@@ -40,12 +45,19 @@ if exist src\pl\plpython\win32ver.rc del /q src\pl\plpython\win32ver.rc
 if exist src\pl\tcl\win32ver.rc del /q src\pl\tcl\win32ver.rc
 if exist src\test\isolation\win32ver.rc del /q src\test\isolation\win32ver.rc
 if exist src\test\regress\win32ver.rc del /q src\test\regress\win32ver.rc
+REM #ifdef IvorySQL
+REM IvorySQL:BEGIN - SQL oracle_test
+if exist src\oracle_test\isolation\win32ver.rc del /q src\oracle_test\isolation\win32ver.rc
+if exist src\oracle_test\regress\win32ver.rc del /q src\oracle_test\regress\win32ver.rc
+REM IvorySQL:END - SQL oracle_test
+REM #endif
 if exist src\timezone\win32ver.rc del /q src\timezone\win32ver.rc
 
 for /d %%f in (src\interfaces\ecpg\*) do if exist %%f\win32ver.rc del /q %%f\win32ver.rc
 for /d %%f in (contrib\*) do if exist %%f\win32ver.rc del /q %%f\win32ver.rc
 for /d %%f in (src\backend\utils\mb\conversion_procs\*) do if exist %%f\win32ver.rc del /q %%f\win32ver.rc
 for /d %%f in (src\test\modules\*) do if exist %%f\win32ver.rc del /q %%f\win32ver.rc
+for /d %%f in (src\oracle_test\modules\*) do if exist %%f\win32ver.rc del /q %%f\win32ver.rc
 
 REM Delete files created with GenerateFiles() in Solution.pm
 if exist src\include\pg_config.h del /q src\include\pg_config.h
@@ -176,16 +188,41 @@ if %DIST%==1 if exist contrib\seg\segscan.c del /q contrib\seg\segscan.c
 if %DIST%==1 if exist contrib\seg\segparse.c del /q contrib\seg\segparse.c
 
 if exist src\test\regress\tmp_check rd /s /q src\test\regress\tmp_check
+REM #ifdef IvorySQL
+REM IvortSQL:BEGIN - SQL oracle_test
+if exist src\oracle_test\regress\tmp_check rd /s /q src\oracle_test\regress\tmp_check
+REM IvortSQL:END - SQL oracle_test
+REM #endif
 if exist contrib\spi\refint.dll del /q contrib\spi\refint.dll
 if exist contrib\spi\autoinc.dll del /q contrib\spi\autoinc.dll
 if exist src\test\regress\regress.dll del /q src\test\regress\regress.dll
 if exist src\test\regress\refint.dll del /q src\test\regress\refint.dll
 if exist src\test\regress\autoinc.dll del /q src\test\regress\autoinc.dll
+REM #ifdef IvorySQL
+REM IvorySQL:BEGIN - SQL oracle_test
+if exist src\oracle_test\regress\oraregress.dll del /q src\oracle_test\regress\oraregress.dll
+if exist src\oracle_test\regress\refint.dll del /q src\oracle_test\regress\refint.dll
+if exist src\oracle_test\regress\autoinc.dll del /q src\oracle_test\regress\autoinc.dll
+REM IvorySQL:END - SQL oracle_test
+REM #endif
 if %DIST%==1 if exist src\test\isolation\specscanner.c del /q src\test\isolation\specscanner.c
 if %DIST%==1 if exist src\test\isolation\specparse.c del /q src\test\isolation\specparse.c
+REM #ifdef IvorySQL
+REM IvorySQL:BEGIN - SQL oracle_test
+if %DIST%==1 if exist src\oracle_test\isolation\specscanner.c del /q src\oracle_test\isolation\specscanner.c
+if %DIST%==1 if exist src\oracle_test\isolation\specparse.c del /q src\oracle_test\isolation\specparse.c
+REM IvorySQL:END - SQL oracle_test
+REM #endif
 
 for /d %%f in (contrib\* src\bin\* src\test\* src\test\modules\*
   ) do if exist %%f\tmp_check rd /s /q %%f\tmp_check
+
+REM #ifdef IvorySQL
+REM IvorySQL:BEGIN - SQL oracle_test
+for /d %%f in (src\oracle_test\* src\oracle_test\modules\*
+  ) do if exist %%f\tmp_check rd /s /q %%f\tmp_check
+REM IvorySQL:END - SQL oracle_test
+REM #endif
 
 REM Clean up datafiles built with contrib
 REM cd contrib

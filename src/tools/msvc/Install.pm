@@ -429,6 +429,28 @@ sub CopyContribFiles
 			CopySubdirFiles($subdir, $d, $config, $target);
 		}
 	}
+
+	# IvorySQL:BEGIN - SQL oracle_test
+	print "\nCopying oracle contrib data files...";
+	foreach my $subdir ('contrib', 'src/oracle_test/modules')
+	{
+		my $D;
+		opendir($D, $subdir) || croak "Could not opendir on $subdir!\n";
+		while (my $d = readdir($D))
+		{
+			# These configuration-based exclusions must match vcregress_ora.pl
+			next if ($d eq "uuid-ossp"	&& !defined($config->{uuid}));
+			next if ($d eq "sslinfo"		&& !defined($config->{openssl}));
+			next if ($d eq "xml2" 			&& !defined($config->{xml}));
+			next if ($d =~ /_plperl$/ 	&& !defined($config->{perl}));
+			next if ($d =~ /_plpython$/ && !defined($config->{python}));
+			next if ($d eq "sepgsql");
+
+			CopySubdirFiles($subdir, $d, $config, $target);
+		}
+	}
+	# IvorySQL:END - SQL oracle_test
+
 	print "\n";
 	return;
 }

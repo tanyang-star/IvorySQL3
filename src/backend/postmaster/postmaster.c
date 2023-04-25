@@ -4473,7 +4473,6 @@ BackendInitialize(Port *port)
 		snprintf(PostPortNumberStr, sizeof(PostPortNumberStr), "%d", PostPortNumber);
 		snprintf(OraPortNumberStr, sizeof(OraPortNumberStr), "%d", OraPortNumber);
 
-
 		if (strstr(service, PostPortNumberStr) != NULL)
 		{
 			port->connmode = 'p';
@@ -4511,7 +4510,6 @@ BackendInitialize(Port *port)
 			else
 				sql_raw_parser = ora_raw_parser;
 		}
-
 		else
 			port->connmode = 'u';
 	}

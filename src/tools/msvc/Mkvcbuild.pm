@@ -395,6 +395,19 @@ sub mkvcbuild
 	$pgregress_ecpg->AddDirResourceFile('src/interfaces/ecpg/test');
 	$pgregress_ecpg->AddReference($libpgcommon, $libpgport);
 
+	#IvorySQL:BEGIN - SQL ecpg oracle_test
+	my $oraregress_ecpg =
+		$solution->AddProject('ora_regress_ecpg', 'exe', 'misc');
+	$oraregress_ecpg->AddFile('src/interfaces/ecpg/oracle_test/pg_regress_ecpg.c');
+	$oraregress_ecpg->AddFile('src/oracle_test/regress/pg_regress.c');
+	$oraregress_ecpg->AddIncludeDir('src/port');
+	$oraregress_ecpg->AddIncludeDir('src/oracle_test/regress');
+	$oraregress_ecpg->AddDefine('HOST_TUPLE="i686-pc-win32vc"');
+	$oraregress_ecpg->AddLibrary('ws2_32.lib');
+	$oraregress_ecpg->AddDirResourceFile('src/interfaces/ecpg/oracle_test');
+	$oraregress_ecpg->AddReference($libpgcommon, $libpgport);
+	#IvorySQL:END - SQL ecpg oracle_test
+
 	my $isolation_tester =
 	  $solution->AddProject('isolationtester', 'exe', 'misc');
 	$isolation_tester->AddFile('src/test/isolation/isolationtester.c');
@@ -411,6 +424,23 @@ sub mkvcbuild
 	$isolation_tester->AddDirResourceFile('src/test/isolation');
 	$isolation_tester->AddReference($libpq, $libpgcommon, $libpgport);
 
+	#IvorySQL:BEGIN - SQL oracle_test
+	my $ora_isolation_tester =
+		$solution->AddProject('ora_isolationtester', 'exe', 'misc');
+	$ora_isolation_tester->AddFile('src/oracle_test/isolation/isolationtester.c');
+	$ora_isolation_tester->AddFile('src/oracle_test/isolation/specparse.y');
+	$ora_isolation_tester->AddFile('src/oracle_test/isolation/specscanner.l');
+	$ora_isolation_tester->AddFile('src/oracle_test/isolation/specparse.c');
+	$ora_isolation_tester->AddIncludeDir('src/oracle_test/isolation');
+	$ora_isolation_tester->AddIncludeDir('src/port');
+	$ora_isolation_tester->AddIncludeDir('src/oracle_test/regress');
+	$ora_isolation_tester->AddIncludeDir('src/interfaces/libpq');
+	$ora_isolation_tester->AddDefine('HOST_TUPLE="i686-pc-win32vc"');
+	$ora_isolation_tester->AddLibrary('ws2_32.lib');
+	$ora_isolation_tester->AddDirResourceFile('src/oracle_test/isolation');
+	$ora_isolation_tester->AddReference($libpq, $libpgcommon, $libpgport);
+	#IvorySQL:END - SQL oracle_test
+
 	my $pgregress_isolation =
 	  $solution->AddProject('pg_isolation_regress', 'exe', 'misc');
 	$pgregress_isolation->AddFile('src/test/isolation/isolation_main.c');
@@ -421,6 +451,19 @@ sub mkvcbuild
 	$pgregress_isolation->AddLibrary('ws2_32.lib');
 	$pgregress_isolation->AddDirResourceFile('src/test/isolation');
 	$pgregress_isolation->AddReference($libpgcommon, $libpgport);
+
+	#BEGIN - SQL oracle_test
+	my $oraregress_isolation =
+		$solution->AddProject('ora_isolation_regress', 'exe', 'misc');
+	$oraregress_isolation->AddFile('src/oracle_test/isolation/isolation_main.c');
+	$oraregress_isolation->AddFile('src/oracle_test/regress/pg_regress.c');
+	$oraregress_isolation->AddIncludeDir('src/port');
+	$oraregress_isolation->AddIncludeDir('src/oracle_test/regress');
+	$oraregress_isolation->AddDefine('HOST_TUPLE="i686-pc-win32vc"');
+	$oraregress_isolation->AddLibrary('ws2_32.lib');
+	$oraregress_isolation->AddDirResourceFile('src/oracle_test/isolation');
+	$oraregress_isolation->AddReference($libpgcommon, $libpgport);
+	#END - SQL oracle_test
 
 	# src/bin
 	my $D;
@@ -894,6 +937,38 @@ sub mkvcbuild
 	$pgregress->AddLibrary('ws2_32.lib');
 	$pgregress->AddDirResourceFile('src/test/regress');
 	$pgregress->AddReference($libpgcommon, $libpgport);
+
+	#BEGIN - SQL oracle_test
+	#Oracle Regression DDL and EXE
+	my $ora_regress = $solution->AddProject('oraregress', 'dll', 'misc');
+	$ora_regress->AddFile('src/oracle_test/regress/regress.c');
+	$ora_regress->AddDirResourceFile('src/oracle_test/regress');
+	$ora_regress->AddReference($postgres);
+
+	my $oraregress = $solution->AddProject('ora_regress', 'exe', 'misc');
+	$oraregress->AddFile('src/oracle_test/regress/pg_regress.c');
+	$oraregress->AddFile('src/oracle_test/regress/pg_regress_main.c');
+	$oraregress->AddIncludeDir('src/port');
+	$oraregress->AddDefine('HOST_TUPLE="i686-pc-win32vc"');
+	$oraregress->AddLibrary('ws2_32.lib');
+	$oraregress->AddDirResourceFile('src/oracle_test/regress');
+	$oraregress->AddReference($libpgcommon, $libpgport);
+
+	#PostgreSQL Regression DDL and EXE in Oracle compatible mode
+	my $orapg_regress = $solution->AddProject('orapgregress', 'dll', 'misc');
+	$orapg_regress->AddFile('src/test/regress/regress.c');
+	$orapg_regress->AddDirResourceFile('src/test/regress');
+	$orapg_regress->AddReference($postgres);
+
+	my $orapgregress = $solution->AddProject('ora_pg_regress', 'exe', 'misc');
+	$orapgregress->AddFile('src/test/regress/ora_pg_regress.c');
+	$orapgregress->AddFile('src/test/regress/pg_regress_main.c');
+	$orapgregress->AddIncludeDir('src/port');
+	$orapgregress->AddDefine('HOST_TUPLE="i686-pc-win32vc"');
+	$orapgregress->AddLibrary('ws2_32.lib');
+	$orapgregress->AddDirResourceFile('src/test/regress');
+	$orapgregress->AddReference($libpgcommon, $libpgport);
+	#END - SQL oracle_test
 
 	# fix up pg_waldump once it's been set up
 	# files symlinked on Unix are copied on windows
