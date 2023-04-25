@@ -302,9 +302,9 @@ static void setup_privileges(FILE *cmdfd);
 static void set_info_version(void);
 static void setup_schema(FILE *cmdfd);
 static void load_plpgsql(FILE *cmdfd);
-/* BEGIN - SQL PARSER */
-//static void load_plisql(FILE *cmdfd);
-/* END - SQL PARSER */
+/* IvorySQL BEGIN - load plisql */
+static void load_plisql(FILE *cmdfd);
+/* IvorySQL END - load plisql */
 static void vacuum_db(FILE *cmdfd);
 static void make_template0(FILE *cmdfd);
 static void make_postgres(FILE *cmdfd);
@@ -2000,16 +2000,17 @@ load_plpgsql(FILE *cmdfd)
 	PG_CMD_PUTS("CREATE EXTENSION plpgsql;\n\n");
 }
 
-/* BEGIN - SQL PARSER */
-/* load plsq language */
 /*
+ * IvorySQL BEGIN - load plisql
+ * load plisql language
+ */
 static void
 load_plisql(FILE *cmdfd)
 {
 	PG_CMD_PUTS("CREATE EXTENSION plisql;\n\n");
 }
-*/
-/* END - SQL PARSER */
+/* IvorySQL END - load plisql */
+
 /*
  * clean everything up in template1
  */
@@ -3237,11 +3238,14 @@ initialize_data_directory(void)
 	load_plpgsql(cmdfd);
 
 /* BEGIN - SQL oracle_mode */
-  /* load oracle compatible objects and plisql language */
+	/* load oracle compatible objects and plisql language */
 	if (database_mode == DB_ORACLE)
 	{
 		setup_ora_sys_schema(cmdfd);
-		//load_plisql(cmdfd);
+
+		/* IvorySQL BEGIN - load plisql */
+		load_plisql(cmdfd);
+		/* IvorySQL END - load plisql */
 	}
 /* END - SQL oracle_mode */
 
