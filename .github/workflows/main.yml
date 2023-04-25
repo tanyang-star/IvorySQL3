@@ -1,4 +1,4 @@
-name: regression 
+name: main 
    on: 
  push: 
  branches: [ master, IVORY_REL_3_DEV ] 
