@@ -2465,7 +2465,6 @@ regression_main(int argc, char *argv[],
 		/*
 		 * Start the temp postmaster
 		 */
-		header(_("starting postmaster"));
 		snprintf(buf, sizeof(buf),
 				 "\"%s%spostgres\" -D \"%s/data\" -F%s "
 				 "-c \"listen_addresses=%s\" -k \"%s\" "
@@ -2551,7 +2550,7 @@ regression_main(int argc, char *argv[],
 #define ULONGPID(x) (unsigned long) (x)
 #endif
 		note("using temp instance on port %d with PID %lu",
-			 OraPort, ULONGPID(postmaster_pid));
+			 oraPort, ULONGPID(postmaster_pid));
 	}
 	else
 	{

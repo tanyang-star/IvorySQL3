@@ -720,9 +720,9 @@ pg_regress_locale_flags = $(if $(ENCODING),--encoding=$(ENCODING)) $(NOLOCALE)
 oracle_regress_locale_flags = $(if $(ENCODING),--encoding=$(ENCODING)) $(NOLOCALE)
 #IvorySQL:END - SQL oracle_test
 pg_regress_clean_files = results/ regression.diffs regression.out tmp_check/ tmp_check_iso/ log/ output_iso/
-#BEGIN - SQL oracle_test
+#IvorySQL:BEGIN - SQL oracle_test
 oracle_regress_clean_files = results/ regression.diffs regression.out tmp_check/ tmp_check_iso/ log/ output_iso/
-#END - SQL oracle_test
+#IvorySQL:END - SQL oracle_test
 
 pg_regress_check = \
     echo "\# +++ regress check in $(subdir) +++" && \

@@ -3,7 +3,7 @@
  * ora_kwlist_d.h
  *    List of keywords represented as a ScanKeywordList.
  *
- * Portions Copyright (c) 1996-2022, PostgreSQL Global Development Group
+ * Portions Copyright (c) 1996-2023, PostgreSQL Global Development Group
  * Portions Copyright (c) 1994, Regents of the University of California
  *
  * NOTES
@@ -1116,4 +1116,4 @@ const ScanKeywordList OraScanKeywords = {
 	17
 };
 
-#endif							/* KWLIST_D_H */
+#endif							/* ORA_KWLIST_D_H */
