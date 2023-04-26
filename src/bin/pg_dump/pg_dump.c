@@ -63,10 +63,17 @@
 #include "getopt_long.h"
 #include "libpq/libpq-fs.h"
 #include "parallel.h"
+/* BEGIN - SQL PARSER */
+#include "pg_backup_archiver.h"
+/* END - SQL PARSER */
 #include "pg_backup_db.h"
 #include "pg_backup_utils.h"
 #include "pg_dump.h"
 #include "storage/block.h"
+/* Begin - SQL PARSER */
+#include "oracle_fe_utils/ora_string_utils.h"
+/* END - SQL PARSER */
+
 
 typedef struct
 {
@@ -803,6 +810,9 @@ main(int argc, char **argv)
 	 * death.
 	 */
 	ConnectDatabase(fout, &dopt.cparams, false);
+	/* BEGIN - SQL PARSER */
+	getDbCompatibleMode(((ArchiveHandle *) fout)->connection);
+	/* END - SQL PARSER */
 	setup_connection(fout, dumpencoding, dumpsnapshot, use_role);
 
 	/*

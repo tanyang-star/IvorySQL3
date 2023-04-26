@@ -328,5 +328,10 @@ main(int argc, char *argv[])
 		   ControlFile->data_checksum_version);
 	printf(_("Mock authentication nonce:            %s\n"),
 		   mock_auth_nonce_str);
+	/* BEGIN - SQL PARSER */
+	/* database compatible mode */
+	printf(_("database mode:                        %u\n"),
+		   ControlFile->dbmode);
+	/* END - SQL PARSER */
 	return 0;
 }

@@ -12,6 +12,9 @@
 #include "catalog/pg_class_d.h"
 #include "fe_utils/string_utils.h"
 #include "pg_upgrade.h"
+/* BEGIN - SQL PARSER */
+#include "oracle_fe_utils/ora_string_utils.h"
+/* END - SQL PARSER */
 
 
 /*
@@ -266,6 +269,10 @@ old_9_6_invalidate_hash_indexes(ClusterInfo *cluster, bool check_mode)
 					i_relname;
 		DbInfo	   *active_db = &cluster->dbarr.dbs[dbnum];
 		PGconn	   *conn = connectToServer(cluster, active_db->db_name);
+
+		/* BEGIN - SQL PARSER */
+		getDbCompatibleMode(conn);
+		/* END - SQL PARSER */
 
 		/* find hash indexes */
 		res = executeQueryOrDie(conn,
