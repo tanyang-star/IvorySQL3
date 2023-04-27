@@ -7,7 +7,7 @@
 # src/Makefile
 #
 #-------------------------------------------------------------------------
-
+#######
 subdir = src
 top_builddir = ..
 include Makefile.global
